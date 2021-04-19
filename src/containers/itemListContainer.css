@@ -1,0 +1,7 @@
+.center {
+  justify-content: center;
+  align-items: center;
+  height: 100px;
+  text-align: center;
+  margin:10px;
+}

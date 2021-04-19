@@ -1,0 +1,16 @@
+._card {
+  /*border: 1px solid black;*/
+  border-radius: 0.25rem;
+  width: 310px;
+  margin-top: 10px;
+  margin-left: auto;
+  margin-right: auto;
+}
+@media (max-width: 640px) {
+  ._card{
+    /*border: 1px solid black;*/
+    border-radius: 0.25rem;
+    width: 95%;
+    margin: 10px;
+  }
+}
