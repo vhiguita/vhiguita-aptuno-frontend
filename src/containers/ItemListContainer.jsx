@@ -1,24 +1,32 @@
 import React, { useState, useEffect} from 'react';
-import { useParams } from 'react-router-dom';
+//import { useParams } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import Pagination from "react-js-pagination";
 // import ItemCount from './../components/itemcount/index';
-import ItemList from './../components/itemlist/index';
+//import ItemList from './../components/itemlist/index';
+import Item from '../components/item/index';
 import './itemListContainer.css';
 
 const ItemListContainer = ({greeting}) =>{
   const [products, setProducts] = useState([]);
   const [aProducts, setAProducts] = useState([]);
   const [regions, setRegions] = useState([]);
-  const [numCuartos, setNumCuartos] = useState("");
   const [rg, setRg] = useState("");
   const [chk1, setChk1] = useState(false);
   const [chk2, setChk2] = useState(false);
   const [chk3, setChk3] = useState(false);
   const [chk4, setChk4] = useState(false);
-  const [isFilter, setIsFilter] = useState(false);
 
-  //const dbContextUse = useContext(dbContext);
-  //const { prods } = useContext(dbContext);
+  const todosPerPage = 12;
+  const [ activePage, setCurrentPage ] = useState( 1 );
+  const indexOfLastTodo  = activePage * todosPerPage;
+  const indexOfFirstTodo = indexOfLastTodo - todosPerPage;
+  const currentTodos     = products.slice( indexOfFirstTodo, indexOfLastTodo );
+  const handlePageChange = ( pageNumber ) => {
+      console.log( `active page is ${ pageNumber }` );
+      setCurrentPage( pageNumber )
+   };
+
   function selectRegion(e){
     setChk1(false);
     setChk2(false);
@@ -27,7 +35,8 @@ const ItemListContainer = ({greeting}) =>{
 
     console.log(e.target.value);
     setRg(e.target.value);
-    setIsFilter(true);
+    //setIsFilter(true);
+    setCurrentPage(1);
     if(e.target.value===""){
 
       const apiUrl = 'https://raw.githubusercontent.com/aptuno/code-challenge/master/challenges/data/properties.json';
@@ -57,7 +66,7 @@ const ItemListContainer = ({greeting}) =>{
     }
   }
   function handleChange1(e){
-     console.log("1 "+e.target.checked);
+     //console.log("1 "+e.target.checked);
      if(e.target.checked){
        setChk1(true);
      }else{
@@ -65,7 +74,7 @@ const ItemListContainer = ({greeting}) =>{
      }
   }
   function handleChange2(e){
-     console.log("2 "+e.target.checked);
+     //console.log("2 "+e.target.checked);
      if(e.target.checked){
        setChk2(true);
      }else{
@@ -73,7 +82,7 @@ const ItemListContainer = ({greeting}) =>{
      }
   }
   function handleChange3(e){
-     console.log("3 "+e.target.checked);
+     //console.log("3 "+e.target.checked);
      if(e.target.checked){
        setChk3(true);
      }else{
@@ -81,7 +90,7 @@ const ItemListContainer = ({greeting}) =>{
      }
   }
   function handleChange4(e){
-     console.log("4 "+e.target.checked);
+     //console.log("4 "+e.target.checked);
      if(e.target.checked){
        setChk4(true);
      }else{
@@ -91,13 +100,11 @@ const ItemListContainer = ({greeting}) =>{
   function search(){
     let pds = [];
     let b = false;
-    setIsFilter(false);
     if(chk1){
       for(let i=0;i<aProducts.length;i++){
         if(aProducts[i].bedrooms===1){
           pds.push(aProducts[i]);
           b = true;
-          setIsFilter(true);
         }
       }
     }
@@ -106,7 +113,6 @@ const ItemListContainer = ({greeting}) =>{
         if(aProducts[i].bedrooms===2){
           pds.push(aProducts[i]);
           b = true;
-          setIsFilter(true);
         }
       }
     }
@@ -115,7 +121,6 @@ const ItemListContainer = ({greeting}) =>{
         if(aProducts[i].bedrooms===3){
           pds.push(aProducts[i]);
           b = true;
-          setIsFilter(true);
         }
       }
     }
@@ -124,16 +129,16 @@ const ItemListContainer = ({greeting}) =>{
         if(aProducts[i].bedrooms===4){
           pds.push(aProducts[i]);
           b = true;
-          setIsFilter(true);
         }
       }
 
     }
     if(b){
       setProducts(pds);
+      setCurrentPage(1);
     }else{
       //setProducts(aProducts);
-      alert("No encontró resultados según el criterio de búsqueda");
+      alert("No se encontraron resultados según el criterio de búsqueda");
     }
 
   }
@@ -162,6 +167,11 @@ const ItemListContainer = ({greeting}) =>{
      });
   }, []);
 
+  const renderTodos = currentTodos.map( ( product, index ) => {
+     //console.log(product);
+     return <li><Item key={product.id} id={product.id} title={product.title} price={product.pricing.administrativeFee+product.pricing.rentalPrice} images={product.images} area={product.area} bedrooms={product.bedrooms}/></li>;
+  } );
+
   return (
 
     <>
@@ -175,7 +185,7 @@ const ItemListContainer = ({greeting}) =>{
        </select></p>
       </div>
       <div>
-      <p><strong># cuartos</strong></p>
+      <p><strong># cuartos:</strong>
       <input type="checkbox" name="1" value="1" defaultChecked={chk1} checked={chk1} onChange={handleChange1}/>
       <label for="1">1</label>
       <input type="checkbox" name="2" value="2" defaultChecked={chk2} checked={chk2} onChange={handleChange2}/>
@@ -184,10 +194,24 @@ const ItemListContainer = ({greeting}) =>{
       <label for="3">3</label>
       <input type="checkbox" name="4" value="4" defaultChecked={chk4} checked={chk4} onChange={handleChange4}/>
       <label for="4">4</label>
-      <button onClick={()=>{search()}}>Buscar</button>
+      <button onClick={()=>{search()}}>Buscar</button></p>
       </div>
     </div>
-     <ItemList products={products} isFilter={isFilter}/>
+    <div className="pagination">
+         <Pagination
+            activePage={ activePage }
+            itemsCountPerPage={ 12 }
+            totalItemsCount={ products.length }
+            pageRangeDisplayed={ 12 }
+            onChange={ handlePageChange }
+         />
+    </div>
+    <div className="result">
+      <ul>
+        { renderTodos }
+      </ul>
+    </div>
+     {/*<ItemList products={products} isFilter={isFilter}/>*/}
     </>
 
   );

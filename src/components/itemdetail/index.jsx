@@ -40,6 +40,7 @@ const ItemDetail = ({item}) =>{
       <p><strong>Cuartos:</strong> {item.bedrooms}</p>
       <p><strong>Baños:</strong> {item.bathrooms}</p>
       <p><strong>Precio:</strong> {formatter.format(item.pricing.administrativeFee+item.pricing.rentalPrice)}</p>
+      <p>{item.description}</p>
       </div>
 
       </>

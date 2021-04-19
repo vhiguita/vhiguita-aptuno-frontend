@@ -4,17 +4,11 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import Item from '../item/index';
 import './itemlist.css';
 
-const ItemList = ({products, isFilter}) =>{
+const ItemList = ({products}) =>{
   //console.log(products);
-console.log(isFilter);
+
   const todosPerPage = 12;
   const [ activePage, setCurrentPage ] = useState( 1 );
-  useEffect(() => {
-    console.log("2......"+isFilter);
-    if (isFilter) {
-      setCurrentPage( 1 )
-    }
-  }, [isFilter]);
   // Logic for displaying current todos
   const indexOfLastTodo  = activePage * todosPerPage;
   const indexOfFirstTodo = indexOfLastTodo - todosPerPage;
